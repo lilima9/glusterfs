@@ -1,0 +1,8 @@
+---
+
+computeserver:
+  - name: server1
+    ipaddress: 10.131.125.2
+
+  - name: server2
+    ipaddress: 10.131.125.4

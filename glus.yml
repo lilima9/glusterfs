@@ -1,0 +1,41 @@
+---
+- hosts: web
+  become: yes
+  vars_files:
+  - computeserver.yml
+  tasks:
+    - name: Start GlusterFS
+      service: name=glusterfs-server state=started enabled=true
+
+    - name: turn off firewall
+      command: iptables -I INPUT -p all -s {{ item.ipaddress }} -j ACCEPT
+      with_items: "{{ computeserver }}"
+
+    #- name: turn off firewall
+    #  command: iptables -I INPUT -p all -s 10.131.125.135 -j ACCEPT
+
+    - name: probe gluster peers
+      command: gluster peer probe {{item.ipaddress}}
+      register: gluster_peer_probe
+      changed_when: "'already in peer list' not in gluster_peer_probe.stdout"
+      with_items: "{{ computeserver }}"
+      when: inventory_hostname == groups.web[0]
+
+    #- name: probe gluster peers
+    #   command: gluster peer detach 10.131.125.135
+      #register: gluster_peer_probe
+      #changed_when: "'already in peer list' not in gluster_peer_probe.stdout"
+
+    - name: gluster peers status
+      command: gluster peer status
+
+    - name: Make directory
+      file: path=/bricks state=directory
+    - name: Make directory
+      file: path=/bricks/brick1 state=directory
+    - name: Make directory
+      file: path=/bricks/brick2 state=directory
+    - name: Make directory
+      file: path=/bricks/brick3 state=directory
+    - name: Make directory
+      file: path=/bricks/brick4 state=directory

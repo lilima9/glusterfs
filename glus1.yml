@@ -1,0 +1,19 @@
+---
+- hosts: web
+  become: yes
+  vars_files:
+  - computeserver.yml
+  tasks:
+    - name: create gluster volume with multiple bricks
+      gluster_volume:
+        state: present
+        name: test2
+        bricks: /bricks/brick1,/bricks/brick2,/bricks/brick3,/bricks/brick4
+        cluster:
+          - 10.131.125.2
+          - 10.131.125.4
+        replicas: 2
+        stripes: 2
+        host: "{{ inventory_hostname }}"
+        force: yes
+      run_once: true

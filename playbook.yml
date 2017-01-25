@@ -1,0 +1,14 @@
+---
+- hosts: all
+  become: yes
+  name: Gluster configuration
+
+  tasks:
+   - name: Install software properties
+     apt: name=software-properties-common state=present
+   - name: Add repositories
+     apt_repository: repo='ppa:gluster/glusterfs-3.8' state=present update_cache=yes
+   - name: Install glusterfs-server
+     apt: name=glusterfs-server state=present
+   - name: Install glusterfs-client
+     apt: name=glusterfs-client state=present
